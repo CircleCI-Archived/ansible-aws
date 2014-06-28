@@ -1,0 +1,39 @@
+---
+- name: ensure that a single instance is launched
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    instance_name: dev
+    group_name: ec2_hosts
+    count_tags: { "Name": "{{ instance_name }}" }
+  tasks:
+    - name: lookup ami id
+      ec2_ami_search: distro=ubuntu region={{ region }} release=trusty
+      register: ubuntu_image
+    - name: ensure one instance exists
+      ec2:
+        image: "{{ ubuntu_image.ami }}"
+        instance_type: "{{ instance_type }}"
+        instance_tags: "{{ count_tags }}"
+        region: "{{ region }}"
+        group: "{{ security_group }}"
+        wait: yes
+        exact_count: 1
+        count_tag: "{{ count_tags }}"
+        key_name: "{{ keypair }}"
+      register: ec2_info
+    - name: add instance to in-memory hosts
+      add_host: hostname={{ ec2_info.tagged_instances[0].public_dns_name }} groupname=ec2_hosts
+    - name: wait for instances to listen on port 22
+      wait_for: state=started host={{ ec2_info.tagged_instances[0].public_dns_name }} port=22
+
+- name: ensure that the complete app is installed on the instance
+  hosts: ec2_hosts
+  remote_user: ubuntu
+  sudo: yes
+  roles:
+    - mysql_server
+    - redis
+    - hello
+

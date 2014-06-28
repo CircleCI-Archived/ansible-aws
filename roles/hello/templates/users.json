@@ -1,0 +1,19 @@
+[
+{
+    "fields": {
+        "username": "{{ test_user_name }}",
+        "first_name": "",
+        "last_name": "",
+        "is_active": true,
+        "is_superuser": false,
+        "is_staff": false,
+        "last_login": "2014-06-01T00:14:35.954Z",
+        "groups": [],
+        "user_permissions": [],
+        "password": "{{ test_user_pass_hash }}",
+        "email": "test@example.com",
+        "date_joined": "2014-06-01T00:14:35.954Z"
+    },
+    "model": "auth.user"
+}
+]

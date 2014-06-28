@@ -1,0 +1,26 @@
+---
+- name: gather facts based on ec2 metadata
+  ec2_facts:
+- name: ensure required packages installed
+  apt: name={{ item }} state=present
+  with_items:
+    - git
+    - python-pip
+- name: checkout repo
+  git: repo=https://github.com/bellkev/gridviz.git dest=/opt/gridviz
+- name: ensure pip packages installed
+  pip:
+    requirements: /opt/gridviz/requirements.txt
+    extra_args: --find-links=http://gridviz-wheelhouse.s3-website-us-west-2.amazonaws.com
+# This task needs to use template because ini_file can't handle uwsgi's duplicate keys
+- name: ensure uwsgi config file in place
+  template: src=uwsgi_dev.ini dest=/etc/uwsgi/
+- name: ensure nginx config file in place
+  template: src=nginx_dev.conf dest=/etc/nginx/sites-available
+- name: ensure nginx site enabled
+  file: src=/etc/nginx/sites-available/nginx_dev.conf dest=/etc/nginx/sites-enabled/nginx_dev.conf state=link
+- name: ensure services reloaded
+  service: name={{ item }} state=reloaded
+  with_items:
+    - nginx
+    - uwsgi

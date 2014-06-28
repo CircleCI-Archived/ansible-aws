@@ -1,0 +1,11 @@
+---
+- name: ensure pip installed
+  apt: name=python-pip state=present
+- name: install from pip
+  pip: name=uwsgi
+- name: ensure vassal directory in place
+  file: path=/etc/uwsgi/ state=directory
+- name: setup upstart
+  copy: src=uwsgi.conf dest=/etc/init/
+- name: ensure uwsgi service started
+  service: name=uwsgi state=started
