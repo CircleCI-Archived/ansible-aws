@@ -7,10 +7,10 @@
     - git
     - python-pip
 - name: synchronize source tree
-  synchronize: src=. dest=/opt/ansible-aws recursive=yes delete=yes archive=no
+  synchronize: src=../app dest=/opt recursive=yes delete=yes archive=no
 - name: ensure pip packages installed
   pip:
-    requirements: /opt/ansible-aws/requirements.txt
+    requirements: /opt/app/requirements.txt
 # This task needs to use template because ini_file can't handle uwsgi's duplicate keys
 - name: ensure uwsgi config file in place
   template: src=uwsgi_dev.ini dest=/etc/uwsgi/
