@@ -13,11 +13,11 @@
     requirements: /opt/app/requirements.txt
 # This task needs to use template because ini_file can't handle uwsgi's duplicate keys
 - name: ensure uwsgi config file in place
-  template: src=uwsgi_dev.ini dest=/etc/uwsgi/
+  copy: src=hello.ini dest=/etc/uwsgi/
 - name: ensure nginx config file in place
-  template: src=nginx_dev.conf dest=/etc/nginx/sites-available
+  copy: src=hello.conf dest=/etc/nginx/sites-available/
 - name: ensure nginx site enabled
-  file: src=/etc/nginx/sites-available/nginx_dev.conf dest=/etc/nginx/sites-enabled/nginx_dev.conf state=link
+  file: src=/etc/nginx/sites-available/hello.conf dest=/etc/nginx/sites-enabled/hello.conf state=link
 - name: ensure services reloaded
   service: name={{ item }} state=reloaded
   with_items:
