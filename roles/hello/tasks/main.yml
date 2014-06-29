@@ -7,7 +7,7 @@
     - git
     - python-pip
 - name: checkout repo
-  git: repo=https://github.com/bellkev/ansible-aws.git dest=/opt/ansible-aws
+  git: repo=git@github.com:bellkev/ansible-aws.git dest=/opt/ansible-aws accept_hostkey=yes
 - name: ensure pip packages installed
   pip:
     requirements: /opt/ansible-aws/requirements.txt

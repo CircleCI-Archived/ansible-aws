@@ -1,6 +1,9 @@
 ---
-- name: ensure pip installed
-  apt: name=python-pip state=present update_cashe=yes
+- name: ensure required packages installed
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - python-pip
+    - python-dev  
 - name: install from pip
   pip: name=uwsgi
 - name: ensure vassal directory in place
