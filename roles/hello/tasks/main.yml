@@ -2,7 +2,7 @@
 - name: gather facts based on ec2 metadata
   ec2_facts:
 - name: ensure required packages installed
-  apt: name={{ item }} state=present update_cache=yes
+  apt: name={{ item }} state=present
   with_items:
     - git
     - python-pip

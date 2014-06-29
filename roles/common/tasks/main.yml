@@ -1,0 +1,4 @@
+---
+# It speeds things up a bit to do this just once
+- name: apt update
+  apt: update_cache=yes
