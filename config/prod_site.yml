@@ -44,7 +44,7 @@
         attempt=0
         while [[ $attempt -lt $retry_attempts ]]
         do
-          status_code=`curl -s -i --data "host_config_key={{ callback_key }}" \
+          status_code=`curl -k -s -i --data "host_config_key={{ callback_key }}" \
             {{ callback_url }} | head -n 1 | awk '{print $2}'`
           if [[ $status_code == 202 ]]
             then
