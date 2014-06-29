@@ -1,5 +1,5 @@
 ---
 dependencies:
-  - { role: common }
-  - { role: uwsgi }
-  - { role: nginx }
+  - { role: common, tags: dep }
+  - { role: uwsgi, tags: dep }
+  - { role: nginx, tags: dep }
