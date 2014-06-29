@@ -1,6 +1,6 @@
 ---
 - name: ensure pip installed
-  apt: name=python-pip state=present
+  apt: name=python-pip state=present update_cashe=yes
 - name: install from pip
   pip: name=uwsgi
 - name: ensure vassal directory in place

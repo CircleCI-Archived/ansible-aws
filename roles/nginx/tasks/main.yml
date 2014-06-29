@@ -1,5 +1,5 @@
 ---
 - name: ensure nginx installed
-  apt: name=nginx state=present
+  apt: name=nginx state=present update_cache=yes
 - name: ensure nginx service started
   service: name=nginx state=started
