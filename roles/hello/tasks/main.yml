@@ -7,7 +7,7 @@
     - git
     - python-pip
 - name: synchronize source tree
-  synchronize: src=. dest=/opt/ansible-aws
+  synchronize: src=. dest=/opt/ansible-aws recursive=yes delete=yes archive=no
 - name: ensure pip packages installed
   pip:
     requirements: /opt/ansible-aws/requirements.txt
