@@ -1,5 +1,4 @@
 ---
 dependencies:
-  - { role: mysql_client }
   - { role: uwsgi }
   - { role: nginx }
