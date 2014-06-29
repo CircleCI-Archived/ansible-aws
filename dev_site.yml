@@ -33,7 +33,5 @@
   remote_user: ubuntu
   sudo: yes
   roles:
-    - mysql_server
-    - redis
     - hello
 
