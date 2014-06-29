@@ -6,8 +6,8 @@
   with_items:
     - git
     - python-pip
-- name: checkout repo
-  git: repo=git@github.com:bellkev/ansible-aws.git dest=/opt/ansible-aws accept_hostkey=yes
+- name: synchronize source tree
+  synchronize: src=. dest=/opt/ansible-aws
 - name: ensure pip packages installed
   pip:
     requirements: /opt/ansible-aws/requirements.txt
