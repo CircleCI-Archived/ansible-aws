@@ -1,0 +1,6 @@
+---
+azs: "us-west-2a,us-west-2b,us-west-2c"
+instance_type: t1.micro
+keypair: deploy-key
+region: us-west-2
+security_group: ssh-http
