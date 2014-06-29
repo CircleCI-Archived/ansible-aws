@@ -40,8 +40,21 @@
       instance_type: "{{ instance_type }}"
       user_data: |
         #!/bin/bash
-        curl --data "host_config_key={{ callback_key }} \
-            {{ callback_url }} 
+        retry_attempts=10
+        attempt=0
+        while [[ $attempt -lt $retry_attempts ]]
+        do
+          status_code=`curl -s -i --data "host_config_key={{ callback_key }}" \
+            {{ callback_url }} | head -n 1 | awk '{print $2}'`
+          if [[ $status_code == 202 ]]
+            then
+            exit 0
+          fi
+          attempt=$(( attempt + 1 ))
+          echo "${status_code} received... retrying in 1 minute. (Attempt ${attempt})"
+          sleep 60
+        done
+        exit 1
   - name: ensure asg exists
     ec2_asg:
       name: "{{ stack_name }}-asg"
