@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+  - name: validate input
+    fail: msg="The variables 'stack_name' and 'lc_version' must be specified as extra vars"
+    when: stack_name is not defined or lc_version is not defined
+  - name: kill asg
+    ec2_asg:
+      name: "{{ stack_name }}-asg"
+      region: "{{ region }}"
+      state: absent
+  - name: kill launch config
+    ec2_lc:
+      name: "{{ stack_name }}-lc-{{ lc_version }}"
+      region: "{{ region }}"
+      state: absent
+  - name: kill elb
+    ec2_elb_lb:
+      name: "{{ stack_name }}-elb"
+      region: "{{ region }}"
+      state: absent

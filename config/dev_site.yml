@@ -31,6 +31,7 @@
 - name: ensure that the complete app is installed on the instance
   hosts: ec2_hosts
   remote_user: ubuntu
+  gather_facts: yes
   sudo: yes
   roles:
     - hello

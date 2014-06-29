@@ -2,11 +2,11 @@
 - name: create an autoscaling group based on a launch configuration
   hosts: localhost
   connection: local
-  gather_facts: False
+  gather_facts: no
   tasks:
   - name: validate input
-    fail: msg="The variable 'stack_name' must be specified as an extra var"
-    when: stack_name is not defined
+    fail: msg="The variables 'stack_name', 'lc_version', 'callback_url', and 'callback_key'  must be specified as extra vars"
+    when: stack_name is not defined or lc_version is not defined or callback_url is not defined or callback_key is not defined
   - name: ensure elb exists
     ec2_elb_lb:
       name: "{{ stack_name }}-elb"
@@ -20,55 +20,32 @@
       health_check:
         ping_protocol: http
         ping_port: 8000
-        ping_path: "/accounts/login/"
+        ping_path: "/"
         response_timeout: 5 # seconds
         interval: 30 # seconds
         unhealthy_threshold: 2
-        healthy_threshold: 10
+        healthy_threshold: 5
     register: elb_data
-  - name: ensure rds instance exists
-    rds:
-      instance_name: "{{ stack_name }}-db"
-      db_engine: MySQL
-      command: create
-      instance_type: db.t1.micro
-      region: us-west-2
-      username: "{{ db_user }}"
-      password: "{{ db_pass }}"
-      size: 5
-      db_name: gridviz
-      wait: yes
-      wait_timeout: 1200 # seconds
-    register: rds_data
   - name: lookup ami id
     ec2_ami_search: distro=ubuntu region={{ region }} release=trusty
     register: ubuntu_image
   # Note that launch configs cannot be updated -- only created or deleted
   - name: ensure launch config exists
     ec2_lc:
-      name: "{{ stack_name }}-lc-{{ version }}"
+      name: "{{ stack_name }}-lc-{{ lc_version }}"
       region: "{{ region }}"
       image_id: "{{ ubuntu_image.ami }}"
       key_name: "{{ keypair }}"
       security_groups: "{{ security_group }}"
       instance_type: "{{ instance_type }}"
-      instance_profile_name: "{{ role }}"
       user_data: |
         #!/bin/bash
-        apt-get install -y git python-setuptools python-dev
-        git clone -b personal https://github.com/bellkev/ansible.git /opt/ansible
-        (cd /opt/ansible && python setup.py install)
-        git clone https://github.com/bellkev/gridviz.git {{ gridviz_root }}
-        printf "[local]\nlocalhost\n" > /opt/local
-        mkdir /etc/ansible
-        printf "[defaults]\nlog_path = /var/log/ansible.log\n" \
-          > /etc/ansible/ansible.cfg
-        ansible-playbook {{ gridviz_root }}/ansible/bootstrap.yml -i /opt/local \
-          -e "db_user={{ db_user }} db_pass={{ db_pass }} db_host={{ rds_data.instance.endpoint }} gridviz_root={{ gridviz_root }} django_secret_key={{ django_secret_key }} extra_hostnames={{ elb_data.elb.dns_name }},{{ domain_name }}"
+        curl --data "host_config_key={{ callback_key }} \
+            {{ callback_url }} 
   - name: ensure asg exists
     ec2_asg:
       name: "{{ stack_name }}-asg"
-      launch_config_name: "{{ stack_name }}-lc-{{ version }}"
+      launch_config_name: "{{ stack_name }}-lc-{{ lc_version }}"
       load_balancers: "{{ stack_name}}-elb"
       min_size: 1
       max_size: 1
@@ -76,3 +53,10 @@
       availability_zones: "{{ azs }}"
       state: present
 
+- name: deploy the app to instances
+  hosts: tag_aws_autoscaling_groupName_{{ stack_name }}-asg
+  remote_user: ubuntu
+  gather_facts: yes
+  sudo: yes
+  roles:
+    - hello
