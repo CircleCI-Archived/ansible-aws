@@ -1,7 +1,10 @@
 ---
 - name: ensure that a single instance is launched
   hosts: localhost
-  connection: local
+  # Specify this in the inventory file relevant to localhost
+  # instead of here, as it is required for other things like
+  # the 'synchronize' module
+  # connection: local
   gather_facts: no
   vars:
     instance_name: dev
