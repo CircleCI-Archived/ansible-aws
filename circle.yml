@@ -1,4 +1,21 @@
 ---
 machine:
   python:
-    version: 2.7.3
+    version: 2.7.5
+dependencies:
+  override:
+    - git clone https://github.com/ansible/tower-cli.git ../tower-cli
+    - (cd ../tower-cli && make install)
+    - pip install -r app/requirements.txt
+test:
+  override:
+    - (cd app && nosetests)
+deployment:
+  prod:
+    branch: master
+    commands:
+      - > tower-cli joblaunch
+        --template $ANSIBLE_TOWER_JOB_TEMPLATE_ID
+        --username $ANSIBLE_TOWER_USER
+        --password $ANSIBLE_TOWER_PASS
+        --server $ANSIBLE_TOWER_SERVER
