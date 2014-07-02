@@ -11,7 +11,6 @@
 - name: ensure pip packages installed
   pip:
     requirements: /opt/app/requirements.txt
-# This task needs to use template because ini_file can't handle uwsgi's duplicate keys
 - name: ensure uwsgi config file in place
   copy: src=hello.ini dest=/etc/uwsgi/
 - name: ensure nginx config file in place
