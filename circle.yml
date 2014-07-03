@@ -1,11 +1,11 @@
----
 machine:
   python:
     version: 2.7.5
 dependencies:
   override:
     - git clone https://github.com/ansible/tower-cli.git ../tower-cli
-    - (cd ../tower-cli && make install)
+    - make install:
+        pwd: ../tower-cli
     - pip install -r app/requirements.txt
 test:
   override:
