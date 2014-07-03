@@ -3,6 +3,9 @@ ansible-aws
 
 The project demonstrates continuous integration and delivery of a simple python application using CircleCI, Ansible and AWS. Ansible is used to define everything about the deployment environment, from AWS resources to config files and application code, and CircleCI handles continuous integration and continuous deployment to AWS through Ansible Tower.
 
+##Project overview
+The project consists of two major sections: the app, which is a simple Flask-based web application, and the Ansible playbooks (the "config" directory), which follow [Ansible's recommended directory layout](http://docs.ansible.com/playbooks_best_practices.html#directory-layout). Because the application is deployed to the servers with a "push" model from Ansible Tower, the entire source tree is first pulled down to Ansible Tower, and then the python application code is pushed to the app servers using [synchronize module](http://docs.ansible.com/synchronize_module.html), which is just a wrapper around rsync (the are only needed on the Tower server, where the instruct Ansible what commands to run against the remote hosts).
+
 ##Running locally
 To run the (very simple) Flask application locally, simply clone the repository, run `pip install -r requirements.txt` (optionally inside of a virtualenv), and then run `python app/hello/hello_app.py` to start the app on port 5000 (the `app.run` method takes an optional “port” keyword argument, which is not currently passed in from the command line args).
 
@@ -88,3 +91,11 @@ The circle.yml file included in the project already specifies all of the test an
 * ANSIBLE_TOWER_SERVER (full URL to the server)
 
 When those environment variables are set, any CircleCI build on master will trigger a job launch and deployment to AWS.
+
+##See Also
+* The AWS docs on [Auto Scaling Groups](http://docs.aws.amazon.com/AutoScaling/latest/DeveloperGuide/WhatIsAutoScaling.html) and [Elastic Load Balancing](http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/SvcIntro.html)
+* [The Ansible docs](http://docs.ansible.com/)
+* [Ansible Tower](http://www.ansible.com/tower)
+* [The Flask Quickstart](http://flask.pocoo.org/docs/quickstart/#quickstart)
+* [Testing Flask Applications](http://flask.pocoo.org/docs/testing/) from the Flask docs
+* [The nose documentation](https://nose.readthedocs.org/en/latest/) for more information about the nose test runner
